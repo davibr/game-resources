@@ -56,3 +56,28 @@ Route::put('jogos/{jogo}', [JogosController::class, 'update'])
 Route::delete('jogos/{jogo}', [JogosController::class, 'destroy'])
     ->name('jogos.destroy')
     ->middleware('auth');
+
+// Recursos
+Route::get('recursos', [JogosController::class, 'index'])
+    ->name('recursos')
+    ->middleware('auth');
+
+Route::get('recursos/create', [JogosController::class, 'create'])
+    ->name('recursos.create')
+    ->middleware('auth');
+
+Route::post('recursos', [JogosController::class, 'store'])
+    ->name('recursos.store')
+    ->middleware('auth');
+
+Route::get('recursos/{recurso}/edit', [JogosController::class, 'edit'])
+    ->name('recursos.edit')
+    ->middleware('auth');
+
+Route::put('recursos/{recurso}', [JogosController::class, 'update'])
+    ->name('recursos.update')
+    ->middleware('auth');
+
+Route::delete('recursos/{recurso}', [JogosController::class, 'destroy'])
+    ->name('recursos.destroy')
+    ->middleware('auth');

@@ -13,4 +13,8 @@ class Recurso extends Model
     public function tipo_recurso() {
         return $this->belongsTo(TipoRecurso::class);
     }
+
+    public function scopeOrderByNome($query) {
+        $query->orderBy('nome');
+    }
 }

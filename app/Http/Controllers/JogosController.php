@@ -43,7 +43,8 @@ class JogosController extends Controller
         return Inertia::render('Jogos/Edit', [
             'jogo' => [
                 'id' => $jogo->id,
-                'nome' => $jogo->nome
+                'nome' => $jogo->nome,
+                'recursos' => $jogo->recursos()->orderByNome()->get()
             ]
         ]);
     }
