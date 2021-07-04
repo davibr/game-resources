@@ -30,24 +30,37 @@ class JogosController extends Controller
     }
 
     public function store() {
-        Jogo::create(Request::validate([
-            'nome' => ['required', 'max:255']
-        ]));
+        Jogo::create(
+            Request::validate([
+              'nome' => ['required', 'max:255']
+            ])
+        );
 
         return Redirect::route('jogos')->with('success', 'Jogo adicionado.');
     }
 
     public function edit(Jogo $jogo) {
-
+        return Inertia::render('Jogos/Edit', [
+            'jogo' => [
+                'id' => $jogo->id,
+                'nome' => $jogo->nome
+            ]
+        ]);
     }
 
     public function update(Jogo $jogo) {
+        $jogo->update(
+            Request::validate([
+                'nome' => ['required', 'max:255']
+            ])
+        );
 
+        return Redirect::back()->with('success', 'Jogo atualizado.');
     }
 
     public function destroy(Jogo $jogo) {
         $jogo->delete();
 
-        return Redirect::back()->with('success', 'Jogo excluído.');
+        return Redirect::route('jogos')->with('success', 'Jogo excluído.');
     }
 }

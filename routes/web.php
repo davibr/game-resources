@@ -45,7 +45,7 @@ Route::post('jogos', [JogosController::class, 'store'])
     ->name('jogos.store')
     ->middleware('auth');
 
-Route::get('jogos/edit', [JogosController::class, 'edit'])
+Route::get('jogos/{jogo}/edit', [JogosController::class, 'edit'])
     ->name('jogos.edit')
     ->middleware('auth');
 
