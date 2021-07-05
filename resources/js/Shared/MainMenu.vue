@@ -12,6 +12,12 @@
                 <div :class="isUrl('jogos') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Jogos</div>
             </inertia-link>
         </div>
+        <div class="mb-4">
+            <inertia-link class="flex items-center group py-3" :href="route('recursos')">
+                <icon name="game-resource" class="w-4 h-4 mr-2" :class="isUrl('recursos') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+                <div :class="isUrl('recursos') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Recursos</div>
+            </inertia-link>
+        </div>
 <!--        <div class="mb-4">-->
 <!--            <inertia-link class="flex items-center group py-3" :href="route('contacts')">-->
 <!--                <icon name="users" class="w-4 h-4 mr-2" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />-->

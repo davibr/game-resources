@@ -14,7 +14,20 @@ class Recurso extends Model
         return $this->belongsTo(TipoRecurso::class);
     }
 
+    public function scopeOrderByJogo($query) {
+        $query->orderBy('jogo.nome');
+    }
+
     public function scopeOrderByNome($query) {
         $query->orderBy('nome');
+    }
+
+    public function scopeFiltro($query, array $filtros)
+    {
+        $query->when($filtros['pesquisa'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('nome', 'like', '%'.$search.'%');
+            });
+        });
     }
 }
