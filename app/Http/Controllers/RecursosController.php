@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Jogo;
 use App\Models\Recurso;
+use App\Models\TipoRecurso;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -29,7 +30,10 @@ class RecursosController extends Controller
     }
 
     public function create() {
-        return Inertia::render('Recursos/Create');
+        return Inertia::render('Recursos/Create', [
+            'jogos' => Jogo::orderByNome()->get()->map->only('id', 'nome'),
+            'tiposRecursos' => TipoRecurso::orderById()->get()->map->only('id', 'nome')
+        ]);
     }
 
     public function store() {
