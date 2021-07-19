@@ -77,42 +77,39 @@ class RecursosController extends Controller
                 'marcar_posicao' => ['required']
             ])
         );
-        Cache::forget('link_recurso_' . $recurso->id);
 
         return Redirect::back()->with('success', 'Recurso atualizado.');
     }
 
     public function destroy(Recurso $recurso) {
         $recurso->delete();
-        Cache::forget('link_recurso_' . $recurso->id);
 
         return Redirect::route('recursos')->with('success', 'Recurso excluído.');
     }
 
     public function link(\Illuminate\Http\Request $request, Recurso $recurso) {
         if ($recurso->tipo_recurso->nome == 'Guia TXT') {
-            $content = Cache::remember('link_recurso_' . $recurso->id, 60*60*24, function () use ($recurso) {
-                $ch = curl_init() ;
-                $url = $recurso->link;
-                $agent= 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)';
-                $options = array(
-                    CURLOPT_URL => $url,
-                    CURLOPT_HEADER => false ,
-                    CURLOPT_TIMEOUT => 20,
-                    CURLOPT_SSL_VERIFYHOST => false,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_USERAGENT => $agent,
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_RETURNTRANSFER => true
-                );
 
-                curl_setopt_array($ch, $options);
-                $html = curl_exec($ch);
-                curl_close($ch);
+            $ch = curl_init() ;
+            $url = $recurso->link;
+            $agent= 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)';
+            $options = array(
+                CURLOPT_URL => $url,
+                CURLOPT_HEADER => false ,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_USERAGENT => $agent,
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_RETURNTRANSFER => true
+            );
 
-                preg_match_all("/<pre id=\"faqspan-\d+\">(.+?)<\/pre>/is", $html,$matches);
-                return implode("\n", $matches[1]);
-            });
+            curl_setopt_array($ch, $options);
+            $html = curl_exec($ch);
+            curl_close($ch);
+
+            preg_match_all("/<pre id=\"faqspan-\d+\">(.+?)<\/pre>/is", $html,$matches);
+            $content = implode("\n", $matches[1]);
 
             return response($content, 200)
                 ->header('Content-Type', 'text/plain');
