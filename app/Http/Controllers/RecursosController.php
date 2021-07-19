@@ -18,6 +18,7 @@ class RecursosController extends Controller
         return Inertia::render('Recursos/Index', [
             'filtros' => Request::all('pesquisa'),
             'recursos' => Recurso::orderByJogo()
+                ->select('recursos.*')
                 ->filtro(Request::only('pesquisa'))
                 ->paginate(10)
                 ->withQueryString()
@@ -44,7 +45,7 @@ class RecursosController extends Controller
                 'jogo_id' => ['required', 'exists:jogos,id'],
                 'tipo_recurso_id' => ['required', 'exists:tipos_recursos,id'],
                 'link' => ['required', 'max:255'],
-                'marcar_posicao' => ['required', 'boolean']
+                'marcar_posicao' => ['required']
             ])
         );
 
@@ -73,7 +74,7 @@ class RecursosController extends Controller
                 'jogo_id' => ['required', 'exists:jogos,id'],
                 'tipo_recurso_id' => ['required', 'exists:tipos_recursos,id'],
                 'link' => ['required', 'max:255'],
-                'marcar_posicao' => ['required', 'boolean']
+                'marcar_posicao' => ['required']
             ])
         );
         Cache::forget('link_recurso_' . $recurso->id);
@@ -88,7 +89,7 @@ class RecursosController extends Controller
         return Redirect::route('recursos')->with('success', 'Recurso excluído.');
     }
 
-    public function link(Recurso $recurso) {
+    public function link(\Illuminate\Http\Request $request, Recurso $recurso) {
         if ($recurso->tipo_recurso->nome == 'Guia TXT') {
             $content = Cache::remember('link_recurso_' . $recurso->id, 60*60*24, function () use ($recurso) {
                 $ch = curl_init() ;
@@ -116,5 +117,42 @@ class RecursosController extends Controller
             return response($content, 200)
                 ->header('Content-Type', 'text/plain');
         }
+
+        if ($recurso->tipo_recurso->nome == 'Guia HTML') {
+            $paginaAtual = $request->query('page', $recurso->posicao_atual ?? 0);
+
+            $recurso->update(['posicao_atual' => $paginaAtual]);
+
+            $ch = curl_init() ;
+            $url = $recurso->link . "?page=" . $paginaAtual;
+            $agent= 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)';
+            $options = array(
+                CURLOPT_URL => $url,
+                CURLOPT_HEADER => false ,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_USERAGENT => $agent,
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_RETURNTRANSFER => true
+            );
+
+            curl_setopt_array($ch, $options);
+            $html = curl_exec($ch);
+            curl_close($ch);
+
+            $url = parse_url($recurso->link);
+
+            $html = str_replace('src="/', 'src="' . $url['scheme'] . '://' . $url['host'] . '/', $html);
+            $html = str_replace('href="/', 'href="' . $url['scheme'] . '://' . $url['host'] . '/', $html);
+
+            $html = str_replace($recurso->link, route('recursos.link', $recurso), $html);
+            $html = str_replace(route('recursos.link', $recurso) . '"', route('recursos.link', $recurso) . '?page=0"', $html);
+            //html = str_replace($url['path'], route('recursos.link', $recurso), $html);
+
+            return response($html, 200);
+        }
+
+        return \redirect($recurso->link);
     }
 }
