@@ -82,3 +82,6 @@ Route::put('recursos/{recurso}', [RecursosController::class, 'update'])
 Route::delete('recursos/{recurso}', [RecursosController::class, 'destroy'])
     ->name('recursos.destroy')
     ->middleware('auth');
+
+Route::get('recursos/{recurso}/link', [RecursosController::class, 'link'])
+    ->name('recursos.link');

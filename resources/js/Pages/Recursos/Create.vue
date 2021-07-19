@@ -52,6 +52,9 @@ export default {
             form: this.$inertia.form({
                 nome: null,
                 jogo_id: null,
+                tipo_recurso_id: null,
+                link: null,
+                marcar_posicao: false
             }),
         }
     },

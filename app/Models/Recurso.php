@@ -15,7 +15,7 @@ class Recurso extends Model
     }
 
     public function scopeOrderByJogo($query) {
-        $query->orderBy('jogo.nome');
+        $query->join('jogos', 'recursos.jogo_id', '=', 'jogos.id')->orderBy('jogos.nome');
     }
 
     public function scopeOrderByNome($query) {

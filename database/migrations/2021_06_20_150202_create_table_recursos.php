@@ -20,7 +20,7 @@ class CreateTableRecursos extends Migration
             $table->bigInteger('tipo_recurso_id', false, true);
             $table->string('link');
             $table->boolean('marcar_posicao');
-            $table->integer('posicao_atual', false, true);
+            $table->integer('posicao_atual', false, true)->nullable();
             $table->timestamps();
         });
     }

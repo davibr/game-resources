@@ -35,13 +35,18 @@
                         </inertia-link>
                     </td>
                     <td class="border-t">
-                        <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('jogos.edit', recurso.jogo.id)">
-                            {{ recurso.jogo.nome }}
+                        <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('recursos.edit', recurso.id)">
+                            {{ recurso.jogo }}
                         </inertia-link>
                     </td>
                     <td class="border-t">
                         <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('recursos.edit', recurso.id)">
-                            {{ recurso.tipo_recurso.nome }}
+                            {{ recurso.tipo }}
+                        </inertia-link>
+                    </td>
+                    <td class="border-t w-px">
+                        <inertia-link class="px-4 flex items-center" :href="route('recursos.link', recurso.id)" tabindex="-1">
+                            <icon name="printer" class="block w-6 h-6 fill-gray-400" />
                         </inertia-link>
                     </td>
                     <td class="border-t w-px">
