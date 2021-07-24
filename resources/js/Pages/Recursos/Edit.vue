@@ -17,7 +17,6 @@
                         <option v-for="tipo in tiposRecursos" :key="tipo.id" :value="tipo.id">{{ tipo.nome }}</option>
                     </select-input>
                     <text-input v-model="form.link" :error="form.errors.link" class="pr-6 pb-8 w-full lg:w-1/2" label="Link" />
-                    <checkbox-input v-model="form.marcar_posicao" :error="form.errors.marcar_posicao" class="pr-6 pb-8 w-full lg:w-1/2" label="Marcar Posição" />
                 </div>
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
                     <button class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Excluir Recurso</button>
@@ -33,7 +32,6 @@ import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from "../../Shared/SelectInput";
-import CheckboxInput from "../../Shared/CheckboxInput";
 export default {
     metaInfo() {
         return {
@@ -44,7 +42,6 @@ export default {
         SelectInput,
         LoadingButton,
         TextInput,
-        CheckboxInput,
     },
     layout: Layout,
     props: {
@@ -59,8 +56,7 @@ export default {
                 nome: this.recurso.nome,
                 jogo_id: this.recurso.jogo_id,
                 tipo_recurso_id: this.recurso.tipo_recurso_id,
-                link: this.recurso.link,
-                marcar_posicao: this.recurso.marcar_posicao
+                link: this.recurso.link
             }),
         }
     },

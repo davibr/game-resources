@@ -45,8 +45,11 @@
                         </inertia-link>
                     </td>
                     <td class="border-t w-px">
-                        <inertia-link class="px-4 flex items-center" :href="route('recursos.link', recurso.id)" tabindex="-1">
+                        <inertia-link v-if="recurso.tipo == 'Guia TXT'" class="px-4 flex items-center" :href="route('recursos.link', recurso.id)" tabindex="-1">
                             <icon name="printer" class="block w-6 h-6 fill-gray-400" />
+                        </inertia-link>
+                        <inertia-link v-else class="px-4 flex items-center" :href="route('recursos.html', recurso.id)" tabindex="-1">
+                            <icon name="book" class="block w-6 h-6 fill-gray-400" />
                         </inertia-link>
                     </td>
                     <td class="border-t w-px">

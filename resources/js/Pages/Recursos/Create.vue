@@ -17,7 +17,6 @@
                         <option v-for="tipo in tiposRecursos" :key="tipo.id" :value="tipo.id">{{ tipo.nome }}</option>
                     </select-input>
                     <text-input v-model="form.link" :error="form.errors.link" class="pr-6 pb-8 w-full lg:w-1/2" label="Link" />
-                    <checkbox-input v-model="form.marcar_posicao" :error="form.errors.marcar_posicao" class="pr-6 pb-8 w-full lg:w-1/2" label="Marcar Posição" />
                 </div>
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-end items-center">
                     <loading-button :loading="form.processing" class="btn-indigo" type="submit">Adicionar Recurso</loading-button>
@@ -32,14 +31,12 @@ import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from "../../Shared/SelectInput";
-import CheckboxInput from "../../Shared/CheckboxInput";
 export default {
     metaInfo: { title: 'Novo Recurso' },
     components: {
         SelectInput,
         LoadingButton,
-        TextInput,
-        CheckboxInput,
+        TextInput
     },
     props: {
         jogos: Array,
@@ -54,7 +51,6 @@ export default {
                 jogo_id: null,
                 tipo_recurso_id: null,
                 link: null,
-                marcar_posicao: false
             }),
         }
     },

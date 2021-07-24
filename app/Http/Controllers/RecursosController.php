@@ -44,8 +44,7 @@ class RecursosController extends Controller
                 'nome' => ['required', 'max:255'],
                 'jogo_id' => ['required', 'exists:jogos,id'],
                 'tipo_recurso_id' => ['required', 'exists:tipos_recursos,id'],
-                'link' => ['required', 'max:255'],
-                'marcar_posicao' => ['required']
+                'link' => ['required', 'max:255']
             ])
         );
 
@@ -59,8 +58,7 @@ class RecursosController extends Controller
                 'nome' => $recurso->nome,
                 'jogo_id' => $recurso->jogo_id,
                 'tipo_recurso_id' => $recurso->tipo_recurso_id,
-                'link' => $recurso->link,
-                'marcar_posicao' => $recurso->marcar_posicao
+                'link' => $recurso->link
             ],
             'jogos' => Jogo::orderByNome()->get()->map->only('id', 'nome'),
             'tiposRecursos' => TipoRecurso::orderById()->get()->map->only('id', 'nome')
@@ -73,35 +71,40 @@ class RecursosController extends Controller
                 'nome' => ['required', 'max:255'],
                 'jogo_id' => ['required', 'exists:jogos,id'],
                 'tipo_recurso_id' => ['required', 'exists:tipos_recursos,id'],
-                'link' => ['required', 'max:255'],
-                'marcar_posicao' => ['required']
+                'link' => ['required', 'max:255']
             ])
         );
-        Cache::forget('link_recurso_' . $recurso->id);
+        Cache::flush();
 
         return Redirect::back()->with('success', 'Recurso atualizado.');
     }
 
     public function destroy(Recurso $recurso) {
         $recurso->delete();
-        Cache::forget('link_recurso_' . $recurso->id);
+        Cache::flush();
 
         return Redirect::route('recursos')->with('success', 'Recurso excluído.');
     }
 
-    public function link(\Illuminate\Http\Request $request, Recurso $recurso) {
+    public function linkTxt(\Illuminate\Http\Request $request, Recurso $recurso) {
         if ($recurso->tipo_recurso->nome == 'Guia TXT') {
-            $content = Cache::remember('link_recurso_' . $recurso->id, 60*60*24, function () use ($recurso) {
+            $nomeCache = 'link_recurso/' . $recurso->id;
+            $page = $request->query('page', null);
+            $limit = $request->query('limit', 20);
+            if ($page) {
+                $nomeCache .= "/$limit/$page";
+            }
+
+            $content = Cache::remember($nomeCache, 60*60*24, function () use ($recurso, $page, $limit) {
                 $ch = curl_init() ;
                 $url = $recurso->link;
-                $agent= 'Mozilla/5.0 (Linux; Android 5.0; SM-G920A) AppleWebKit (KHTML, like Gecko) Chrome Mobile Safari (compatible; AdsBot-Google-Mobile; +http://www.google.com/mobile/adsbot.html)';
                 $options = array(
                     CURLOPT_URL => $url,
                     CURLOPT_HEADER => false ,
                     CURLOPT_TIMEOUT => 20,
                     CURLOPT_SSL_VERIFYHOST => false,
                     CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_USERAGENT => $agent,
+                    CURLOPT_USERAGENT => env('CURL_USERAGENT'),
                     CURLOPT_MAXREDIRS => 10,
                     CURLOPT_RETURNTRANSFER => true
                 );
@@ -111,13 +114,25 @@ class RecursosController extends Controller
                 curl_close($ch);
 
                 preg_match_all("/<pre id=\"faqspan-\d+\">(.+?)<\/pre>/is", $html,$matches);
-                return implode("\n", $matches[1]);
+
+                $divs = $matches[1];
+
+                if ($page) {
+                    $offset = ($page-1) * $limit;
+                    $divs = array_slice($divs, $offset, $limit);
+                }
+
+                return implode("\n", $divs);
             });
 
             return response($content, 200)
                 ->header('Content-Type', 'text/plain');
         }
 
+        return \redirect()->back(404);
+    }
+
+    public function linkHtml(\Illuminate\Http\Request $request, Recurso $recurso) {
         if ($recurso->tipo_recurso->nome == 'Guia HTML') {
             $paginaAtual = $request->query('page', $recurso->posicao_atual ?? 0);
 
